@@ -314,6 +314,16 @@ push(), pop(), shift(), unshift(), splice(), sort(), reverse()
 ## :class 與 :style 綁定
 
 ```html
+<input type="text" :value="someMessage" disabled />
+===
+<input type="text" :value="someMessage" :disabled="true" />
+===
+<input type="text" :value="someMessage" :disabled="someMessage !== ''" />
+
+:disabled="false" 自動移除屬性
+```
+
+```html
 <div
   class="static"
   v-bind:class="{ active: isActive, 'text-danger': hasError }"
@@ -428,6 +438,11 @@ data: {
 
 ```
 
+```html
+<div :style="{backgroundColor:'red'}">ABC</div>
+background-color => backgroundColor 駝峰式
+```
+
 
 
 ---
@@ -472,7 +487,7 @@ isActive : true 套用 active, false 不套用
 ###  透過 computed classObject 物件 
 
 ```javascript
-<div v-bind:class="classObject"></div>
+<div :class="classObject"></div>
 ...
 computed: {
   classObject: function () {
@@ -521,71 +536,6 @@ computed: {
 ```
 
 ---
-
-### Array function
-
-**`push()`** 方法會添加一個或多個元素至陣列的**末端**，並且**回傳陣列的新長度**。 **+尾部**
-
- **`pop()`** 方法會移除並回傳陣列的**最後一個**元素。**-尾部**
-
- **`unshift()`** 方法會添加一個或多個元素至陣列的開頭，並且回傳陣列的新長度。 **+頭部**
-
- **`shift()`** 方法會移除並回傳陣列的**第一個**元素。此方法會改變陣列的長度。  **-頭部**
-
- **`slice()`** 方法會回傳一個新陣列物件，為原陣列選擇之 `begin` 至 `end`（不含 `end`）部分的淺拷貝（shallow copy）。**原本的陣列將不會被修改**。 
-
-```javascript
-const animals = ['ant', 'bison', 'camel', 'duck', 'elephant'];
-
-console.log(animals.slice(2));
-// Expected output: Array ["camel", "duck", "elephant"]
-
-console.log(animals.slice(2, 4));
-// Expected output: Array ["camel", "duck"]
-
-console.log(animals.slice(1, 5));
-// Expected output: Array ["bison", "camel", "duck", "elephant"]
-
-console.log(animals.slice(-2));
-// Expected output: Array ["duck", "elephant"]
-
-console.log(animals.slice(2, -1));
-// Expected output: Array ["camel", "duck"]
-
-console.log(animals.slice());
-// Expected output: Array ["ant", "bison", "camel", "duck", "elephant"]
-```
-
- **`splice()`** 方法可以藉由刪除既有元素並／或加入新元素來改變一個陣列的內容。 
-
-```javascript
-const months = ['Jan', 'March', 'April', 'June'];
-months.splice(1, 0, 'Feb'); 無刪除, 但有插入
-// Inserts at index 1
-// Expected output: Array ["Jan", "Feb", "March", "April", "June"]
-
-months.splice(4, 1, 'May');
-// Replaces 1 element at index 4
-// Expected output: Array ["Jan", "Feb", "March", "April", "May"]
-```
-
-### 差異
-
-```javascript
-filter()、concat() 和 slice()。它们不会变更原始数组，而总是返回一个新数组。
-
-example1.items = example1.items.filter(function (item) {
-  return item.message.match(/Foo/)
-})
-
-computed: {
-  evenNumbers: function () {
-    return this.numbers.filter(function (number) {
-      return number % 2 === 0
-    })
-  }
-}
-```
 
 
 
@@ -704,11 +654,24 @@ submitForm(event) {
 </form>
 @submit.prevent === event.preventDefault();
 
-<!-- 阻止单击事件继续传播 -->
-<a v-on:click.stop="doThis"></a>
+因為冒泡事件, 點擊 li click 會接著觸發 ul click
+<ul @click="ulclick">
+ <li @click="liclick">111</li>
+ <li>222</li>
+</ul>
 
+<!-- 阻止单击事件继续传播 -->
+<li @click.stop="liclick">111</li> 阻止冒泡事件
+or
+<ul @click.self="ulclick"> 限定點選自己有效
+
+@click.once 只觸發一次
+    
 <!-- 提交事件不再重载页面 -->
 <form v-on:submit.prevent="onSubmit"></form>
+    
+阻止預設事件
+<a href="http://www.google.com" @click.prevent>Google</a>
 
 <!-- 修饰符可以串联 -->
 <a v-on:click.stop.prevent="doThat"></a>
@@ -729,19 +692,46 @@ v-on:click.prevent.self 会阻止所有的点击
 v-on:click.self.prevent 只会阻止对元素自身的点击
 ```
 
-### 按鍵修飾符
+```html
+<button @click="isShow=true">Show</button>
+<div class="box" v-show="isShow" @click.self="isShow=false"> 
+  <input type="text" />
+</div>
+@click.self => 點選 div才會隱藏.未加入. self 點選 input text 也會隱藏.
+or
+input 中加入 @click.stop
+```
+
+
+
+### 按鍵修飾符.enter ...
+
+```javascript
+傳統的方式
+keyup(evt) {
+// keyboardEvent, 按鍵碼, 輸入值
+  console.log(evt, evt.keyCode, evt.target.value);
+  if (evt.keyCode === 13) {  // 只有輸入 enter 時才顯示訊息
+    alert(evt.target.value);
+  }
+}
+簡化後
+<input type="text" @keyup.enter="keyup" /> 輸入 enter 時觸發
+<input type="text" @keyup.enter.ctrl="keyup" /> 輸入 enter + ctrl 時觸發
+<input type="text" @keyup.65="keyup" /> 輸入 a 時觸發
+```
 
 ```html
 <input v-on:keyup.enter="submit">
 <input v-on:keyup.page-down="onPageDown"> $event.key 等于 PageDown 时被调用
 <input v-on:keyup.13="submit">
-.enter, .tab, .delete (捕获“删除”和“退格”键), .esc, .space, .up, .down, .left, .right
+.enter, .tab, .delete (捕获“删除”和“退格”键), .esc, .space, .up, .down, .left, .right, shift
 
 // 全局 config.keyCodes 对象自定义按键修饰符别名： `v-on:keyup.f1`
 Vue.config.keyCodes.f1 = 112
 ```
 
-### 系統修飾鍵
+### 系統修飾鍵  
 
 ```html
 .ctrl, .alt, .shift, .meta
@@ -781,20 +771,26 @@ keyCode：keyup.17 單獨按一下 ctrl
 ```html
 單行
 <input v-model="message" placeholder="edit me">
+message is string
 
 多行
 <textarea v-model="message" placeholder="add multiple lines"></textarea>
+message is string
 
 checkbox, 欄位
 <input type="checkbox" id="checkbox" v-model="checked">
+checked if boolean
+
 複選 checkbox, 綁定同數組
 <input type="checkbox" id="jack" value="Jack" v-model="checkedNames">
 <label for="jack">Jack</label>
 <input type="checkbox" id="john" value="John" v-model="checkedNames">
 <label for="john">John</label>
+checkedNames is []
 
 radio
 <input type="radio" id="one" value="One" v-model="picked"> 欄位
+picked is string
 
 multi radio = list combobox
 <div id="example-5">
@@ -806,6 +802,7 @@ multi radio = list combobox
   </select>
   <span>Selected: {{ selected }}</span> 欄位
 </div>
+selected is []
 
 combobox multi selected
 <div id="example-6">
@@ -817,6 +814,7 @@ combobox multi selected
   <br>
   <span>Selected: {{ selected }}</span> 陣列
 </div>
+selected is []
 
 v-for 渲染
 <select v-model="selected">
@@ -860,6 +858,40 @@ v-for 渲染
 vm.pick === vm.a
 ```
 
+### 存取本地資料 localStorage
+
+```javascript
+myArea: localStorage.getItem("myArea") 取本地資料
+localStorage.setItem("myArea", this.myArea); 儲存本地
+```
+
+### 模糊查詢
+
+```html
+<input type="text" v-model="indata" @input="inputHandle" />
+<ul>
+  <li v-for="item in newDataList">{{item}}</li>
+</ul>
+```
+
+```javascript
+  data() {
+    return {
+      someMessage: "Hello World!!!",
+      indata: "",
+      dataList: ["a", "aa", "aab", "ba", "ccb", "cba", "bba"],
+      newDataList: [],
+    };
+  },
+  methods: {
+    inputHandle() {
+      this.newDataList = this.dataList.filter((item) => {
+        return item.includes(this.indata);
+      });
+    },
+  },
+```
+
 ### 修飾符
 
 ```html
@@ -873,11 +905,302 @@ vm.pick === vm.a
 <input v-model.trim="msg">
 ```
 
+### 購物車
+
+```html
+datalist:[] 來源資料
+checklist:[] 選取的資料
+isAll 是否全選
+
+<div id="app">
+  <div class="box">
+    雙向綁定, 點擊時處理資料. checkbox 時 @change 後資料才會改變
+    <input type="checkbox" v-model="isAll" @change="allChange" />
+
+    <ul v-for="(item, index) in datalist" :key="item">
+      <li>
+        <div>
+          <input
+            type="checkbox"
+            v-model="checklist" 資料存入checklist
+            :value="item"       存入的資料
+            @change="ckChange"  當勾選觸發重新計算金額
+          />
+        </div>
+        <div>
+          <img :src="item.pic" alt="" /> 顯示圖片
+        </div>
+        <div>{{item.name}} ${{item.price}}</div> 顯示商品名稱與價格
+        <div>
+          <button
+            class="btnA"
+            type="button"
+            @click="item.qty++"                增加數量
+            :disabled="item.qty===item.limit"  限制最大數量
+          >
+            +
+          </button>
+          {{item.qty}}
+          <button
+            class="btnA"
+            type="button"
+            @click="item.qty--"        減少數量
+            :disabled="item.qty===1"   限制最小數量
+          >
+            -
+          </button>
+        </div>
+        <div>
+          <button
+            type="button"
+            class="btnB"
+            @click="delAllClick(index, item.id)" 處理刪除
+          >
+            Delete
+          </button>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div>{{sum()}}</div> 顯示加總金額
+  {{checklist}}
+</div>
+```
+
+```javascript
+methods: {
+  處理金額加總
+  sum() {
+    var total = 0;
+    this.checklist.forEach((item) => (total += item.price * item.qty));
+    return total;
+  },
+  刪除商品處理. index 處理 datalist, id 處理 checklist
+  delAllClick(index, id) {
+    console.log(index, id);
+    this.datalist.splice(index, 1);
+    this.checklist = this.checklist.filter((item) => item.id !== id); 取出非目前的商品
+    this.ckChange(); 重新顯示 是否全選
+  },
+  全選, 全部選的處理
+  allChange() {
+    if (this.isAll)
+         this.checklist = this.datalist;
+    else this.checklist = [];
+  },
+  單筆選取與不選取時, 處理是否全選的顯示
+  ckChange() {
+    this.isAll = this.checklist.length === this.datalist.length;
+  },
+},
+---
+改變一: 計算的改成 computed 避免重複計算
+computed: {
+  sum() {
+    var total = 0;
+    this.checklist.forEach((item) => (total += item.price * item.qty));
+    return total;
+  },
+},
+{{sum()}} =>改成 {{sum}}
+---
+改變二: 改成 watch 資料監控.  [ 適用於異步處理 ]
+
+mydata:""
+...
+watch:{
+  mydata(newval, oldval){  建立與變數相同名稱函式
+    ....
+  }
+}
+---
+差異:
+methods  : 適用如點擊觸發
+computed : 計算類[ 缺點無法傳參數 ]
+watch    : 異步回傳
+```
 
 
 
+## Javascript
+
+### Array function
+
+**`push()`** 方法會添加一個或多個元素至陣列的**末端**，並且**回傳陣列的新長度**。 **+尾部**
+
+ **`pop()`** 方法會移除並回傳陣列的**最後一個**元素。**-尾部**
+
+ **`unshift()`** 方法會添加一個或多個元素至陣列的開頭，並且回傳陣列的新長度。 **+頭部**
+
+ **`shift()`** 方法會移除並回傳陣列的**第一個**元素。此方法會改變陣列的長度。  **-頭部**
+
+ **`slice()`** 方法會回傳一個新陣列物件，為原陣列選擇之 `begin` 至 `end`（不含 `end`）部分的淺拷貝（shallow copy）。**原本的陣列將不會被修改**。 
+
+```javascript
+const animals = ['ant', 'bison', 'camel', 'duck', 'elephant'];
+
+console.log(animals.slice(2));
+// Expected output: Array ["camel", "duck", "elephant"]
+
+console.log(animals.slice(2, 4));
+// Expected output: Array ["camel", "duck"]
+
+console.log(animals.slice(1, 5));
+// Expected output: Array ["bison", "camel", "duck", "elephant"]
+
+console.log(animals.slice(-2));
+// Expected output: Array ["duck", "elephant"]
+
+console.log(animals.slice(2, -1));
+// Expected output: Array ["camel", "duck"]
+
+console.log(animals.slice());
+// Expected output: Array ["ant", "bison", "camel", "duck", "elephant"]
+```
+
+ **`splice()`** 方法可以藉由刪除既有元素並／或加入新元素來改變一個陣列的內容。 
+
+```javascript
+const months = ['Jan', 'March', 'April', 'June'];
+months.splice(1, 0, 'Feb'); 無刪除, 但有插入
+// Inserts at index 1
+// Expected output: Array ["Jan", "Feb", "March", "April", "June"]
+
+months.splice(4, 1, 'May');
+// Replaces 1 element at index 4
+// Expected output: Array ["Jan", "Feb", "March", "April", "May"]
+```
+
+### 差異
+
+```javascript
+filter()、concat() 和 slice()。它们不会变更原始数组，而总是返回一个新数组。
+
+example1.items = example1.items.filter(function (item) {
+  return item.message.match(/Foo/)
+})
+
+computed: {
+  evenNumbers: function () {
+    return this.numbers.filter(function (number) {
+      return number % 2 === 0
+    })
+  }
+}
+```
+
+### Fetch get
+
+```javascript
+fetch("http://127.0.0.1:5500/json/test.json")
+  .then((res) => res.json()) // 第一次處理相關例外...
+                 res.json() 可以換成=> res.text() 
+         回傳對象                 回傳字串
+  .then((res) => (this.mydata = res)) // 第二次取回資料
+  .catch(err=>{
+	console.log(err) // 錯誤處理
+}) 
+```
+
+###  Fetch post 
+
+```javascript
+方式一
+fetch("", {
+  method: "post",
+  headers: {
+    "Content-Type": "application/x-www-form-urlencoded",
+  },
+  body: "name=kerwin&age=20",
+})
+  .then((res) => res.json())
+  .then((res) => console.log(res));
+---
+方式二
+fetch("", {
+  method: "post",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ name: "kerwin", age: 20 }),
+})
+  .then((res) => res.json())
+  .then((res) => console.log(res));
+```
+
+### axios 
+
+```javascript
+axios
+  .get("http://127.0.0.1:5500/json/test.json")
+                                          狀態          .data 取回資料
+  .then((res) => console.log(res.status, res.data));
+---
+會自動調整, 不需特別傳入參數
+axios.post("", "name=kerwin&age=20")
+axios.post("", {name:"kerwin", age:20})
+```
+
+## 深入組件
+
+### 註冊
+
+```javascript
+app.component("test", {
+  template: `
+    <h1>自定義組件</h1>
+  `,
+});
+```
+
+```javascript
+app.component("test", {
+  template: `
+    <section>
+      <button @click="leftClick">left</button>
+      {{myname}}
+      <button @click="rightClick">right</button>
+    </section>
+  `,
+  data() {
+    return {
+      myname: "ABC",
+    };
+  },
+  methods: {
+    leftClick() {
+      console.log("Left Click");
+    },
+    rightClick() {
+      console.log("Right Click");
+    },
+  },
+});
+```
 
 
+
+### Props
+
+### 事件
+
+### 組件 v-model
+
+### 透傳 Attributes
+
+### 插槽
+
+### 依賴注入
+
+### 異步組件
+
+## 邏輯複用
+
+### 組合式函數
+
+### 自定義指令
+
+### 插件
 
 
 
