@@ -1,0 +1,10 @@
+/* #app {
+  border: 1px solid blue;
+} */
+#app > div {
+  margin: 0 auto;
+  text-align: center;
+  margin-top: 20px;
+  width: 200px;
+  /* border: 1px solid blue; */
+}

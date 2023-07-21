@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="comm.css" />
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      {{monsterHealth}} : {{playerHealth}} : {{winer}} :{{counter}}
+      <div id="box">
+        <div id="up">
+          <label for="">Monster</label>
+          <div id="monster_value">
+            <div :style="{width:monsterHealth + '%'}"></div>
+          </div>
+          <label for="">Player</label>
+          <div id="player_value">
+            <div :style="{width:playerHealth + '%'}"></div>
+          </div>
+        </div>
+        <div id="down">
+          <div><button @click="attackMonster">攻擊</button></div>
+          <div>
+            <button :disabled="counter % 3 !== 0" @click="attackMonsterSp">
+              特殊攻擊
+            </button>
+          </div>
+          <div><button @click="addPlayerHealth">補血</button></div>
+        </div>
+        <div v-show="winer !== null">
+          <div v-if="winer ==='Monster'">Winer : Monster</div>
+          <div v-else-if="winer ==='Player'">Winder : Palyer</div>
+          <div v-else>is draw</div>
+        </div>
+      </div>
+    </div>
+    <!-- <input type="text" disabled />
+    <button>OK</button>
+    <button disabled>OK</button> -->
+    <script src="app.js"></script>
+  </body>
+</html>

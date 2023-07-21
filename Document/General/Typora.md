@@ -173,9 +173,45 @@ $$
 
 ***
 
+### 變更文字顏色
+
+H<font color="#f00"><strong>e</strong></font>llo, World
+
+```html
+H<font color="#f00"><strong>e</strong></font>llo, World
+```
+
+ps. 可以崁入HTML 耶.
+
+---
 
 
 
+## 常用
+
+```markdown
+#
+主標題
+
+##
+次標題
+
+無序列表
+- 111
+- 222
+- [data]
+
+> 引用
+
+
+
+```
+
+- 111
+- 222
+- [ data ]
+
+> 引用
 
 
 
