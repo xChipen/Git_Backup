@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="comm.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div v-show="show">{{sTemp}}{{func}}{{sTemp2}}</div>
+      {{ sum }}
+
+      <input type="number" v-model.number="temp" />
+
+      <div class="numpad">
+        <ul>
+          <li v-for="item in nums">
+            <button @click="numClick">{{item}}</button>
+          </li>
+        </ul>
+      </div>
+
+      <div class="funcpad">
+        <ul>
+          <li v-for="item in funcs">
+            <button @click="funcClick">{{item}}</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

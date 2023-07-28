@@ -1,6 +1,7 @@
 
 
-## 基本架構 使用 CDN
+## 基礎
+### 基本架構 使用 CDN
 
 index.html
 
@@ -45,42 +46,42 @@ methods:{
 }).mount('#app');
 ```
 
----
 
-## 透過事件異動資料
 
-```javascript
-透過事件異動資料
-<button @click="num++">change</button>
-<button @click="handlechange()">change</button>
-data(){
-  return{
-    num:0
-  }
-},
-methods:{
-  handlechange(){
-    vm.num++ or this.num++
-  }
-}
-```
-
----
-
-## 模板語法
+## 模板語法 
 
 ```html
 <span>Message: {{ msg }}</span>
-<span v-once>这个将不会改变: {{ msg }}</span> 执行一次性地插值，当数据改变时，插值处的内容不会更新
+<span v-once>这个将不会改变: {{ msg }}</span> 
+执行一次性地插值，当数据改变时，插值处的内容不会更新
+
 <p>Using v-html directive: <span v-html="rawHtml"></span></p>
 v-html 轉譯 html 語法 「 避免使用 ： 容易导致 XSS 攻击 」
 ```
-
 ### Attribute 屬性
 
 ```html
 <div v-bind:id="dynamicId"></div>
-<button v-bind:disabled="isButtonDisabled">Button</button>
+<button :disabled="isButtonDisabled">Button</button> 簡寫
+
+<button :disabled="isButtonDisabled">Button</button> boolean
+
+const objectOfAttrs = {
+  id: 'container',
+  class: 'wrapper'
+}
+
+<div v-bind="objectOfAttrs"></div> 动态绑定多个值
+```
+
+```html
+<input type="text" :value="someMessage" disabled />
+===
+<input type="text" :value="someMessage" :disabled="true" />
+===
+<input type="text" :value="someMessage" :disabled="someMessage !== ''" />
+
+:disabled="false" 自動移除屬性
 ```
 
 ###  動態載入圖片 
@@ -90,9 +91,6 @@ v-html 轉譯 html 語法 「 避免使用 ： 容易导致 XSS 攻击 」
 ...
 this.imgpath="https://picsum.photos/id/237/200/300"
 ```
-
-
-
 ### 使用 JavaScript 表达式
 
 ```html
@@ -107,159 +105,9 @@ this.imgpath="https://picsum.photos/id/237/200/300"
 <div v-bind:id="'list-' + id"></div>
 ```
 
-### v-if 指令, 條件渲染
 
-```html
-<p v-if="seen">现在你看到我了</p>
-```
-
-```html
-<h1 v-if="awesome">Vue is awesome!</h1>
-<h1 v-else>Oh no 😢</h1>
-```
-
-```html
-<div v-if="Math.random() > 0.5">
-  Now you see me
-</div>
-<div v-else>
-  Now you don't
-</div>
-```
-
-```html
-<div v-if="type === 'A'">
-  A
-</div>
-<div v-else-if="type === 'B'">
-  B
-</div>
-<div v-else-if="type === 'C'">
-  C
-</div>
-<div v-else>
-  Not A/B/C
-</div>
-```
-
-#### 資料不同, 重新渲染 :key
-
-```html
-<template v-if="loginType === 'username'">
-  <label>Username</label>
-  <input placeholder="Enter your username" key="username-input">
-</template>
-<template v-else>
-  <label>Email</label>
-  <input placeholder="Enter your email address" key="email-input">
-</template>
-```
-
-
-
-####  v-show
-
-```html
-true : display: block;
-false: display: none; 佔據位置空間
-
-<h1 v-show="ok">Hello!</h1>
-v-show 的元素始终会被渲染并保留在 DOM 中。v-show 只是简单地切换元素的 CSS property display。
-注意，v-show 不支持 <template> 元素，也不支持 v-else。
-```
-
-#### v-show vs v-if
-
-```html
-v-if : false 時不會佔據空間
-
-v-if 是“真正”的条件渲染，因为它会确保在切换过程中条件块内的事件监听器和子组件适当地被销毁和重建。
-
-v-if 也是惰性的：如果在初始渲染时条件为假，则什么也不做——直到条件第一次变为真时，才会开始渲染条件块。
-
-相比之下，v-show 就简单得多——不管初始条件是什么，元素总是会被渲染，并且只是简单地基于 CSS 进行切换。
-
-一般来说，v-if 有更高的切换开销，而 v-show 有更高的初始渲染开销。因此，如果需要非常频繁地切换，则使用 v-show 较好；如果在运行时条件很少改变，则使用 v-if 较好。
-```
-
----
-
-## 列表渲染 v-for
-
-```html
-<ul id="example-1">
-  <li v-for="item in items" :key="item.message">
-    {{ item.message }}
-  </li>
-</ul>
---- of => in 功能一樣
-<div v-for="item of items"></div>
-```
-
-```javascript
-    items: [
-      { message: 'Foo' },
-      { message: 'Bar' }
-    ]
-  }
-```
-
----
-
-### 第二參數 index
-
-```html
-<ul id="example-2">
-  <li v-for="(item, index) in items">
-    {{ parentMessage }} - {{ index }} - {{ item.message }}
-  </li>
-</ul>
-```
-
-### for in object
-
-```html
-<ul id="v-for-object" class="demo">
-  <li v-for="value in object">
-    {{ value }}
-  </li>
-</ul>
-or
-<div v-for="(value, name) in object">
-  {{ name }}: {{ value }} => 鍵 ： 值
-</div>
-or
-<div v-for="(value, name, index) in object">
-  {{ index }}. {{ name }}: {{ value }} => 索引 ： 鍵 ： 值
-</div>
-```
-
-```javascript
-    object: {
-      title: 'How to do lists in Vue',
-      author: 'Jane Doe',
-      publishedAt: '2016-04-10'
-    }
-```
-
-### for in number
-
-```html
-<span v-for="n in 10">{{ n }}</span>
-1 ..10
-```
-
-
-
-## 數組更新檢測
-
-```javascript
-push(), pop(), shift(), unshift(), splice(), sort(), reverse()
-
-```
-
-
-
+## 響應式基礎
+## 計算屬性
 ### 計算屬性 [ 優點：不會重複計算 ]
 
 ```html
@@ -283,50 +131,58 @@ push(), pop(), shift(), unshift(), splice(), sort(), reverse()
     }
   }
 ```
-
-### 監聽屬性 : 當屬性改變就會觸發
+###  透過 computed classObject 物件 
 
 ```javascript
- watch: {
-    firstName: function (val) {
-      this.fullName = val + ' ' + this.lastName
-    },
-    lastName: function (val) {
-      this.fullName = this.firstName + ' ' + val
-    }
-    or
-    lastName(newValue, oldValue){
-      this.fullName = this.firstName + ' ' + newValue
+<div :class="classObject"></div>
+...
+computed: {
+  classObject: function () {
+    return {
+      active: this.isActive && !this.error,
+      'text-danger': this.error && this.error.type === 'fatal'
     }
   }
-比較
+}
+```
+
+### 過程
+
+```html
+一般 HTML
+<div id="test1" style="{width: 200px;}">TEST</div>
+
+套用 computed (避免太多語法寫在HTML中), style前面要加 冒號 : 
+缺點 : 無法傳入參數, 優點 : 不會隨時計算
+1.
+<div id="test2" :style="getWidth">TEST</div> // getWidth不用加()
   computed: {
-    fullName: function () {
-      return this.firstName + ' ' + this.lastName
-    }
+    getWidth() {
+      return { width: 300 + "px" }; // 單位要用 " or ' 括起來
+    },
+  }
+2. 加入 this.playerWidth 
+<div id="test2" :style="getWidth">TEST</div>
+data(){
+  return{
+    playerWidth:300
+  }
+},
+  computed: {
+    getWidth() {
+      return { width: this.playerWidth + "px" };
+    },
   }
 ```
 
 
-
----
 
 ## :class 與 :style 綁定
 
 ```html
-<input type="text" :value="someMessage" disabled />
-===
-<input type="text" :value="someMessage" :disabled="true" />
-===
-<input type="text" :value="someMessage" :disabled="someMessage !== ''" />
-
-:disabled="false" 自動移除屬性
-```
-
-```html
 <div
   class="static"
-  v-bind:class="{ active: isActive, 'text-danger': hasError }"
+  :class="{ active: isActive, 'text-danger': hasError }"
 ></div>
 結果為
 <div class="static active"></div>
@@ -342,9 +198,9 @@ data: {
 ---
 
 ```html
-<div v-bind:class="classObject"></div> 物件
+<div :class="classObject"></div> 物件
 結果為
-<div v-bind:class="classObject"></div>
+<div class="active"></div>
 ```
 
 ```javascript
@@ -394,6 +250,7 @@ data: {
 
 ```html
 <div v-bind:class="[isActive ? activeClass : '', 'errorClass']"></div> 加入運算
+errorClass 一直生效. isActive = true, activeClass 才會生效
 ```
 
 ```html
@@ -481,20 +338,169 @@ data(){
 <div :class="{ active: isActive }"></div>
 isActive : true 套用 active, false 不套用
 ```
+###  style 使用數組 
+
+```html
+<div :style="stylearr">ABBBZA</div>
+...
+[物件, 物件, ...]
+stylearr:[{"backgroundColor":'red'}, {"fontSize":30+'px'}]
+```
+
+## 條件渲染
+### v-if 指令, 條件渲染
+
+```html
+<p v-if="seen">现在你看到我了</p>
+```
+
+```html
+<h1 v-if="awesome">Vue is awesome!</h1>
+<h1 v-else>Oh no 😢</h1>
+```
+
+```html
+<div v-if="Math.random() > 0.5">
+  Now you see me
+</div>
+<div v-else>
+  Now you don't
+</div>
+```
+
+```html
+<div v-if="type === 'A'">
+  A
+</div>
+<div v-else-if="type === 'B'">
+  B
+</div>
+<div v-else-if="type === 'C'">
+  C
+</div>
+<div v-else>
+  Not A/B/C
+</div>
+```
+
+#### 資料不同, 重新渲染 :key
+
+```html
+<template v-if="loginType === 'username'">
+  <label>Username</label>
+  <input placeholder="Enter your username" key="username-input">
+</template>
+<template v-else>
+  <label>Email</label>
+  <input placeholder="Enter your email address" key="email-input">
+</template>
+```
+
+####  v-show
+
+```html
+true : display: block;
+false: display: none; 佔據位置空間
+
+<h1 v-show="ok">Hello!</h1>
+v-show 的元素始终会被渲染并保留在 DOM 中。v-show 只是简单地切换元素的 CSS property display。
+注意，v-show 不支持 <template> 元素，也不支持 v-else。
+```
+
+#### v-show vs v-if
+
+```html
+v-if : false 時不會佔據空間
+
+v-if 是“真正”的条件渲染，因为它会确保在切换过程中条件块内的事件监听器和子组件适当地被销毁和重建。
+
+v-if 也是惰性的：如果在初始渲染时条件为假，则什么也不做——直到条件第一次变为真时，才会开始渲染条件块。
+
+相比之下，v-show 就简单得多——不管初始条件是什么，元素总是会被渲染，并且只是简单地基于 CSS 进行切换。
+
+一般来说，v-if 有更高的切换开销，而 v-show 有更高的初始渲染开销。因此，如果需要非常频繁地切换，则使用 v-show 较好；如果在运行时条件很少改变，则使用 v-if 较好。
+```
+
+## 列表渲染 v-for
+
+```html
+<ul id="example-1">
+  <li v-for="item in items" :key="item.message">
+    {{ item.message }}
+  </li>
+</ul>
+--- of => in 功能一樣
+<div v-for="item of items"></div>
+```
+
+```javascript
+    items: [
+      { message: 'Foo' },
+      { message: 'Bar' }
+    ]
+  }
+```
 
 ---
 
-###  透過 computed classObject 物件 
+### 第二參數 index
+
+```html
+<ul id="example-2">
+  <li v-for="(item, index) in items">
+    {{ parentMessage }} - {{ index }} - {{ item.message }}
+  </li>
+</ul>
+```
+
+### for in object
+
+```html
+<ul id="v-for-object" class="demo">
+  <li v-for="value in object">
+    {{ value }}
+  </li>
+</ul>
+or
+<div v-for="(value, name) in object">
+  {{ name }}: {{ value }} => 鍵 ： 值
+</div>
+or
+<div v-for="(value, name, index) in object">
+  {{ index }}. {{ name }}: {{ value }} => 索引 ： 鍵 ： 值
+</div>
+```
 
 ```javascript
-<div :class="classObject"></div>
-...
-computed: {
-  classObject: function () {
-    return {
-      active: this.isActive && !this.error,
-      'text-danger': this.error && this.error.type === 'fatal'
+    object: {
+      title: 'How to do lists in Vue',
+      author: 'Jane Doe',
+      publishedAt: '2016-04-10'
     }
+```
+
+### for in number
+
+```html
+<span v-for="n in 10">{{ n }}</span>
+1 ..10
+```
+
+## 事件處理
+### 透過事件異動資料
+
+```javascript
+透過事件異動資料
+<button @click="num++">change</button>
+<button @click="handlechange()">change</button>
+data(){
+  return{
+    num:0
+  }
+},
+methods:{
+  handlechange(){
+    vm.num++ or this.num++
   }
 }
 ```
@@ -534,25 +540,7 @@ computed: {
   font-size: 32px;
 }
 ```
-
----
-
-
-
-###  style 使用數組 
-
-```html
-<div :style="stylearr">ABBBZA</div>
-...
-[物件, 物件, ...]
-stylearr:[{"backgroundColor":'red'}, {"fontSize":30+'px'}]
-```
-
-
-
----
-
-## 事件 @click
+### 事件 @click
 
 ```html
 <input type="text" :value="name" @keyup.enter="keyup($event)" />
@@ -566,71 +554,6 @@ keyup(event) {
 }
 $event 系統參數
 ```
-
-### 雙向綁定 v-model
-
-```html
-<input type="text" v-model="name" /> 雙向綁定 v-model
-```
-
-### todolist
-
-```html
-    <div id="app">
-      <input type="text" v-model="name" />
-      <button @click="addData">Add</button>
-      <ul>
-        <li v-for="(item, index) in datalist" :key="item"> 加入:key識別.最好是唯一
-          {{item}}
-          <button @click="removeData(index)">Remove</button>
-          <input type="text" /> 未加入 :key 識別, 會有問題. 因為Vue會重複利用 
-        </li>
-      </ul>
-    </div>
-```
-
-```javascript
-  data() {
-    return {
-      name: "123",
-      datalist: [],
-    };
-  },
-  methods: {
-    addData() {  // 新增
-      this.datalist.push(this.name);
-      this.name = "";
-    },
-    removeData(index) { // 移除, 傳入所在位置. 然後重新渲染.
-      this.datalist.splice(index, 1);
-    },
-  }
-```
-
-### 點擊變更顏色
-
-```html
-<li
-    v-for="(item, index) in datalist"
-    @click="change(index)" // 記錄目前的 index
-    :class="current===index?'red':''" // 判斷套用class的條件
->
-...
-</li>
-```
-
-```javascript
-data add property current
-
-change(index) {
-      this.current = index;
-},
-```
-
-
-
----
-
 ### 事件修飾符 .prevent
 
 ```html
@@ -764,9 +687,92 @@ keyCode：keyup.17 單獨按一下 ctrl
 .left, .right, .middle
 ```
 
----
+### ref, this.$refs
 
-## 表單輸入綁定 v-model
+```html
+<input type="text" ref="userNo" />  // 加入 ref
+<button @click="showUserNo">show UserNo</button>
+
+  methods: {
+    showUserNo() {
+      alert(this.$refs.userNo.value); // 透過 this.refs 取值
+    },
+  },
+```
+
+## 表單輸入綁定
+### 雙向綁定 v-model
+
+```html
+<input type="text" v-model="name" /> 雙向綁定 v-model
+```
+### 修飾符
+
+```html
+<!-- 在“change”时而非“input”时更新 -->
+<input v-model.lazy="msg">
+
+输入值转为数值类型
+<input v-model.number="age" type="number">
+
+首尾空白字符
+<input v-model.trim="msg">
+```
+
+### todolist
+
+```html
+    <div id="app">
+      <input type="text" v-model="name" />
+      <button @click="addData">Add</button>
+      <ul>
+        <li v-for="(item, index) in datalist" :key="item"> 加入:key識別.最好是唯一
+          {{item}}
+          <button @click="removeData(index)">Remove</button>
+          <input type="text" /> 未加入 :key 識別, 會有問題. 因為Vue會重複利用 
+        </li>
+      </ul>
+    </div>
+```
+
+```javascript
+  data() {
+    return {
+      name: "123",
+      datalist: [],
+    };
+  },
+  methods: {
+    addData() {  // 新增
+      this.datalist.push(this.name);
+      this.name = "";
+    },
+    removeData(index) { // 移除, 傳入所在位置. 然後重新渲染.
+      this.datalist.splice(index, 1);
+    },
+  }
+```
+
+### 點擊變更顏色
+
+```html
+<li
+    v-for="(item, index) in datalist"
+    @click="change(index)" // 記錄目前的 index
+    :class="current===index?'red':''" // 判斷套用class的條件
+>
+...
+</li>
+```
+
+```javascript
+data add property current
+
+change(index) {
+      this.current = index;
+},
+```
+### 表單輸入綁定 v-model
 
 ```html
 單行
@@ -858,6 +864,70 @@ v-for 渲染
 vm.pick === vm.a
 ```
 
+## 生命週期
+## 監聽器
+### 監聽屬性 : 當屬性改變就會觸發
+
+```javascript
+ watch: {
+    firstName: function (val) {
+      this.fullName = val + ' ' + this.lastName
+    },
+    lastName: function (val) {
+      this.fullName = this.firstName + ' ' + val
+    }
+    or
+    lastName(newValue, oldValue){
+      this.fullName = this.firstName + ' ' + newValue
+    }
+  }
+比較
+  computed: {
+    fullName: function () {
+      return this.firstName + ' ' + this.lastName
+    }
+  }
+```
+
+## 模板引用
+## 組件基礎
+
+## 範例
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+
+
+
+---
+
+
+
+
+
+
+
+---
+
+
+
+---
+
+
+
 ### 存取本地資料 localStorage
 
 ```javascript
@@ -892,18 +962,6 @@ localStorage.setItem("myArea", this.myArea); 儲存本地
   },
 ```
 
-### 修飾符
-
-```html
-<!-- 在“change”时而非“input”时更新 -->
-<input v-model.lazy="msg">
-
-输入值转为数值类型
-<input v-model.number="age" type="number">
-
-首尾空白字符
-<input v-model.trim="msg">
-```
 
 ### 購物車
 
@@ -1143,6 +1201,116 @@ axios.post("", {name:"kerwin", age:20})
 
 ## 深入組件
 
+### Cli
+
+```html
+更新 npm      => npm update -g
+安裝 vue/cli  => npm install -g @vue/cli
+建立 test 專案 => vue create test (專案名稱)
+
+VS-Code 安裝 ESLint
+修改參數
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true
+    }
+Vetur 語法高亮檢查
+```
+
+```html
+檔案說明 ：
+App.vue 	=》 程式進入點 
+
+jsconfig.json =》基本設定
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "esnext",
+    "baseUrl": "./",
+    "moduleResolution": "node",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    },
+    "lib": [
+      "esnext",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ],
+    "allowJs":true 允許使用 javascript, 預設為 typescript
+  }
+}
+```
+
+```html
+.vue 格式 => 1.template, 2.script, 3.style
+HelloView.vue 2個單字組成
+<template>
+    <h1>Hello world!!!</h1h1>
+</template>
+<script>
+    export default{
+        name: 'HelloView'
+    }
+</script>
+<style lang="css">
+    h1{
+        color:lightgreen;
+    }
+</style>
+```
+
+```html
+1.內容的部分
+<template>
+  <div>
+    Hellp Vue!!! {{ myname }}
+    <input type="text" v-model="indata">
+    <button @click="handleclick"> Add </button>
+    <ul >
+      <li v-for="item in datalist" :key="item">{{ item }}</li>
+    </ul>
+    <MyNavbar></MyNavbar> 使用其他組件
+  </div>
+</template>
+
+2.script 的部分
+<script lang="js">
+import MyNavbar from './components/MyNavbar' 引入其他組件
+or
+import MyNavbar from '@/components/MyNavbar.vue' 引入其他組件
+
+export default {
+  data () {
+    return {
+      myname: 'ABC',
+      datalist: ['aaa', 'bbb', 'ccc'],
+      indata: ''
+    }
+  },
+  methods: {
+    handleclick () {
+      this.datalist.push(this.indata)
+    }
+  },
+  components: {
+    MyNavbar: MyNavbar 宣告其他組件
+  }
+}
+</script>
+
+3.CSS的部分
+<style scoped lang="scss"> 使用SCSS語法, scoped 限此處使用
+  ul{
+    li{
+      background-color: yellow;
+      width: 200px;
+    }
+  }
+</style>
+```
+
 ### 註冊
 
 ```javascript
@@ -1154,6 +1322,7 @@ app.component("test", {
 ```
 
 ```javascript
+全域組件
 app.component("test", {
   template: `
     <section>
@@ -1176,6 +1345,521 @@ app.component("test", {
     },
   },
 });
+```
+
+### 父傳子
+
+```html
+    <div id="app">
+      <test :myname="name" :myage="age"></test>
+    </div>
+：myname2, :myage => 子組件的屬性 ; name, age => 父層的屬性
+```
+
+```javascript
+// 父層
+const app = Vue.createApp({
+  data() {
+    return {
+      name: "Jelly",
+      age: 28,
+    };
+  },
+  methods: {},
+});
+
+// 子組件
+app.component("test", {
+  template: `
+    <section>
+      <button @click="leftClick">left</button>
+      {{myname}}
+      <button @click="rightClick">right</button>
+      <div>{{myname2}} - {{myage}}</div>
+    </section>
+  `,
+  props: ["myname", "myage"], 開放傳入的屬性
+  data() {
+    return {
+      myname: "ABC",
+    };
+  },
+  methods: {
+    leftClick() {
+      console.log("Left Click");
+    },
+    rightClick() {
+      console.log("Right Click");
+    },
+  },
+});
+
+app.mount("#app");
+```
+
+### 父傳子 + 屬性 指定形態
+
+``` javasctipt
+型態 : String, Number, Array, Boolean, Object, Date, Function, Symbol
+props: {
+  myage: {
+    type: Number, 數值
+    default: 22, 預設值
+    validator: (value) => value > 20, 資料檢查
+  },
+  myName: {
+    type: [String, Number], 多類型
+    required: true,
+    default: "ABC",
+  }
+}
+```
+
+### 演進過程 : 父傳子
+
+```html
+1. 一般列表
+<template>
+    <section>
+        <ul>
+            <li v-for="friend in friends" :key="friend.id">
+                <div><label for="">id :</label>{{ friend.id }}</div>
+                <div><label for="">name :</label>{{ friend.name }}</div>
+                <div><label for="">phone :</label>{{ friend.phone }}</div>
+                <div><label for="">mailAddress :</label>{{ friend.mailAddress }}</div>
+            </li>
+        </ul>
+    </section>
+</template>
+
+<script>
+export default {
+  name: 'HelloView',
+  data () {
+    return {
+      friends: [
+        {
+          id: 1,
+          name: 'Jelly fish',
+          phone: '1234567890',
+          mailAddress: 'JellyFish@pchome.com.tw'
+        },
+        {
+          id: 1,
+          name: 'Jack',
+          phone: '0975000000',
+          mailAddress: 'Jack@pchome.com.tw'
+        }
+      ]
+    }
+  }
+}
+</script>
+```
+
+```html
+2. 使用組件, 資料先在組件中
+FriendList.vue
+<template>
+    <ul>
+        <li>
+            <div><label for="">id :</label>{{ friend.id }}</div>
+            <div><label for="">name :</label>{{ friend.name }}</div>
+            <div><label for="">phone :</label>{{ friend.phone }}</div>
+            <div><label for="">mailAddress :</label>{{ friend.mailAddress }}</div>
+        </li>
+    </ul>
+</template>
+
+<script>
+export default {
+  name: 'FriendList',
+  data () {
+    return {
+      friend: {
+        id: 1,
+        name: 'Jelly fish',
+        phone: '1234567890',
+        mailAddress: 'JellyFish@pchome.com.tw'
+      }
+    }
+  }
+}
+</script>
+-----------------------------------------------------
+使用
+<template>
+  <div>
+    <FriendList></FriendList> // 使用組件
+  </div>
+</template>
+
+<script>
+// 引用, frieldList 可以叫不同名稱. 但後面名稱都要一致    
+import FriendList from '@/components/FriendList.vue' 
+
+export default {
+  name: 'HelloView',
+  components: {  // 加入組件
+    FriendList
+  },
+  data () {
+    return {
+...
+    }
+  }
+}
+</script>
+```
+
+```html
+3.改傳入資料
+FriendList.vue
+<template>
+    <ul>
+        <li>
+            <div><label for="">id :</label>{{ friendId }}</div>
+            <div><label for="">name :</label>{{ friendName }}</div>
+            <div><label for="">phone :</label>{{ friendPhone }}</div>
+            <div><label for="">mailAddress :</label>{{ friendMailAddress }}</div>
+        </li>
+    </ul>
+</template>
+
+<script>
+export default {
+  name: 'FriendList',
+// 加入 props friendId => friend-id ...    
+// props: ['friendId', 'friendName', 'friendPhone', 'friendMailAddress'],
+// 可以改用明確定義 類型    
+  props: {
+    friendId: {
+      type: [Number,String],  // 多形態
+      required: true,
+      validator: (value) => value >= 0
+    },
+    friendName: {
+      type: String,
+      required: true
+    },
+    friendPhone: {
+      type: String,
+      required: true,
+      default: '0123456789'
+    },
+    friendMailAddress: {
+      type: String,
+      required: true
+    },
+    isFavorate:{
+        type: Boolean,
+        required: true,
+        default: false
+    }
+  },    
+  data () {
+    return {
+    }
+  }
+}
+</script>
+--------------------------------------------------------------------------
+固定值
+<friendList friend-id="1" friend-name="Mouse" friend-phone="123 456 789" friend-mailAddress="mouse@gmail.com"></friendList>
+
+改用 data() 中的資料
+<friendList :friend-id= "id" :friend-name= "name" :friend-phone="phone" :friend-mailAddress= "mailAddress" ></friendList>
+
+改用 v-for
+<li v-for="friend in friends" :key="friend.id" >
+  <friendList :friend-id= "friend.id" :friend-name= "friend.name" :friend-phone="friend.phone" :friend-mailAddress= "friend.mailAddress" ></friendList>
+</li>
+
+可以修改成
+<li v-for="friend in friends" :key="friend.id" >
+  <friendList v-bind="friend"></friendList> 名稱需相同才可以使用
+</li>
+```
+
+```html
+props 明確定義類型
+<friendList :is-Favorate=true ...</friendList> 
+<friendList :is-Favorate="friend.isFavorate" ...</friendList> 可以傳入 Boolean, 非預設字串
+
+```
+
+### 子傳父
+
+```html
+增加 NewFriend.vue
+<template>
+    <form @submit.prevent="submitData">
+        <div>
+            <label for="">name</label>
+            <input type="text" v-model="friendName">
+        </div>
+        <div>
+            <label for="">phone</label>
+            <input type="text" v-model="friendPhone">
+        </div>
+        <div>
+            <label for="">mailAddress</label>
+            <input type="text" v-model="friendMailAddress">
+        </div>
+        <div>
+            <button @click="sendClick">Send</button>
+        </div>
+    </form>
+</template>
+
+<script>
+export default {
+//   emits: ['add-contact'],
+  data () {
+    return {
+      friendName: 'ABC',
+      friendPhone: '',
+      friendMailAddress: ''
+    }
+  },
+  methods: {
+    submitData () {  // 透過事件通知, 呼叫方 
+      this.$emit('add-contact', this.friendName, this.friendPhone, this.friendMailAddress)
+    }
+  }
+}
+</script>
+
+呼叫方增加
+html       元件事件名稱    回呼函式名稱 
+<newFriend @add-contact="addContact"></newFriend>
+
+script
+// 引用 NewFriend.vue 元件
+import newFriend from '@/components/NewFriend.vue'
+
+  methods: {
+    addContact (name, phone, mail) {  // 接受通知
+      const data = {
+        id: new Date().toString(), // 模擬唯一號碼
+        name: name,                // 名稱需與 friends 中的欄位名稱一樣
+        phone: phone,
+        mailAddress: mail,
+        isFavorate: false
+      }
+      this.friends.push(data) // 加入 friends 數組中
+    }
+  },
+```
+
+### 遠距離溝通
+
+```html
+main.js 元件都定義在這裡
+
+// 引用
+import { createApp } from 'vue';
+
+import App from './App.vue';
+import ActiveElement from './components/ActiveElement.vue';
+import KnowledgeBase from './components/KnowledgeBase.vue';
+import KnowledgeElement from './components/KnowledgeElement.vue';
+import KnowledgeGrid from './components/KnowledgeGrid.vue';
+
+const app = createApp(App);
+// 註冊組件
+app.component('active-element', ActiveElement);
+app.component('knowledge-base', KnowledgeBase);
+app.component('knowledge-element', KnowledgeElement);
+app.component('knowledge-grid', KnowledgeGrid);
+
+app.mount('#app');
+------------------------------------------------------------------------
+active-element 顯示用
+knowledge-base 外框 =》 knowledge-grid 生成多個 =》 knowledge-element 顯示與事件處理
+
+ActiveElement.vue 顯示
+<template> 
+  <section>
+    <h2>{{ topicTitle }}</h2>
+    <p>{{ text }}</p>
+  </section>
+</template>
+
+<script>
+export default {
+  props: ['topicTitle', 'text'],
+};
+</script>
+--------------------------------------------
+KnowledgeBase.vue
+<template>
+  <section>
+    <h2>Select a Topic</h2>
+    <knowledge-grid></knowledge-grid> 《=
+  </section>
+</template>
+
+<script>
+export default {};
+</script>
+--------------------------------------------
+KnowledgeGrid.vue 生成 knowledge-element
+<template>
+  <ul>
+    <knowledge-element 《= 顯示
+      v-for="topic in topics"
+      :key="topic.id"
+      :id="topic.id"
+      :topic-name="topic.title"
+      :description="topic.description"
+    ></knowledge-element>
+  </ul>
+</template>
+
+<script>
+export default {
+  inject: ['topics'], // 接收
+};
+</script>
+--------------------------------------------
+KnowledgeElement.vue
+<template>
+  <li>
+    <h3>{{ topicName }}</h3>
+    <p>{{ description }}</p>
+    <button @click="selectTopic(id)">Learn More</button> 《= 回傳 id
+  </li>
+</template>
+
+<script>
+export default {
+  inject: ['selectTopic'],
+  props: ['id', 'topicName', 'description'],
+  emits: ['select-topic'],
+};
+</script>
+--------------------------------------------
+App.vue
+<template>
+  <div>
+    <active-element
+      :topic-title="activeTopic && activeTopic.title"
+      :text="activeTopic && activeTopic.fullText"
+    ></active-element>
+    <knowledge-base></knowledge-base>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      topics: [
+        {
+          id: 'basics',
+          title: 'The Basics',
+          description: 'Core Vue basics you have to know',
+          fullText:
+            'Vue is a great framework and it has a couple of key concepts: Data binding, events, components and reactivity - that should tell you something!',
+        },
+        {
+          id: 'components',
+          title: 'Components',
+          description:
+            'Components are a core concept for building Vue UIs and apps',
+          fullText:
+            'With components, you can split logic (and markup) into separate building blocks and then combine those building blocks (and re-use them) to build powerful user interfaces.',
+        },
+      ],
+      activeTopic: null,
+    };
+  },
+  provide() {
+    return { 
+      topics: this.topics,
+      selectTopic: this.activateTopic
+    };
+  },
+  methods: {
+    activateTopic(topicId) {
+      this.activeTopic = this.topics.find((topic) => topic.id === topicId);
+    },
+  },
+  mounted() {
+    setTimeout(() => {
+      this.topics.push({
+        id: 'events',
+        title: 'Events',
+        description: 'Events are important in Vue',
+        fullText: 'Events allow you to trigger code on demand!'
+      });
+    }, 3000);
+  }
+};
+</script>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+html {
+  font-family: sans-serif;
+}
+body {
+  margin: 0;
+}
+section {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+  margin: 2rem auto;
+  max-width: 40rem;
+  padding: 1rem;
+  border-radius: 12px;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+}
+
+li {
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  width: 15rem;
+  margin: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+h2 {
+  margin: 0.75rem 0;
+  text-align: center;
+}
+
+button {
+  font: inherit;
+  border: 1px solid #c70053;
+  background-color: #c70053;
+  color: white;
+  padding: 0.75rem 2rem;
+  border-radius: 30px;
+  cursor: pointer;
+}
+
+button:hover,
+button:active {
+  background-color: #e24d8b;
+  border-color: #e24d8b;
+}
+</style>
+--------------------------------------------
+
+
 ```
 
 

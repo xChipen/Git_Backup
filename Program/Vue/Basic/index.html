@@ -9,7 +9,20 @@
   </head>
   <body>
     <div id="app">
-      <test></test>
+      <!-- <test :myname2="name" :myage="age"></test> -->
+      <div
+        id="test1"
+        style="
+           {
+            width: 200px;
+          }
+        "
+      >
+        TEST
+      </div>
+      <div id="test2" :style="getWidth">TEST</div>
+      <input type="text" ref="userNo" />
+      <button @click="showUserNo">show UserNo</button>
     </div>
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>

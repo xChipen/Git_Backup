@@ -22,3 +22,8 @@
 .red {
   color: red;
 } */
+
+#test1,
+#test2 {
+  border: 1px solid blue;
+}

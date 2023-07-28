@@ -1,0 +1,37 @@
+/* #app {
+  border: 1px solid blue;
+} */
+
+* {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#app {
+  margin: 50px;
+}
+
+.numpad,
+.funcpad {
+  width: 208px;
+  border: 1px solid blue;
+  overflow: hidden;
+}
+
+.numpad ul > li,
+.funcpad ul > li {
+  float: left;
+  margin: 1px;
+}
+
+.numpad button,
+.funcpad button {
+  font-size: 20px;
+  width: 50px;
+  height: 50px;
+}
+
+input[type="number"] {
+  text-align: right;
+}
