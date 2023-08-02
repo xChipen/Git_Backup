@@ -1655,7 +1655,112 @@ import newFriend from '@/components/NewFriend.vue'
 ### 遠距離溝通
 
 ```html
-main.js 元件都定義在這裡
+emit 傳遞事件
+ShowDataView => ShowDataBase => ShowDataGrid => ShowDataElement
+             => ActiveElement
+ShowDataElement.vue
+<template>
+    <section>
+        <h3>{{ name }}</h3>
+        <p>{{ desc }}</p>
+        <button @click="$emit('select-card', id)">Click</button>
+    </section>
+</template>
+
+<script>
+export default {
+  props: ['id', 'name', 'desc'],
+  emits: ['select-card']
+}
+</script>
+
+ShowDataGrid.vue
+<template>
+    <ul>
+       <ShowDataElement
+        v-for="card in cards"
+        :key="card.id"
+        :id="card.id"
+        :name="card.name"
+        :desc="card.description"
+        @select-card="$emit('select-card', $event)"
+    ></ShowDataElement>
+    </ul>
+</template>
+
+<script>
+import ShowDataElement from '@/components/Show/ShowDataElement.vue'
+export default {
+  props: ['cards'],
+  emits: ['select-card'],
+  components: { ShowDataElement }
+}
+</script>
+
+ShowDataBase.vue
+<template>
+    <ShowDataGrid :cards="cards" @select-card="$emit('select-card', $event)"></ShowDataGrid>
+</template>
+
+<script>
+import ShowDataGrid from '@/components/Show/ShowDataGrid.vue'
+
+export default {
+  props: ['cards'],
+  emits: ['select-card'],
+  components: { ShowDataGrid }
+}
+</script>
+
+ShowDataView.vue
+<template>
+    <section>
+        <div>
+            <ShowDataBase :cards="cards" @select-card="selectCards"></ShowDataBase>
+        </div>
+        <div>
+            <ActiveElement :name-data="activeCard && activeCard.name" :desc="activeCard && activeCard.description"></ActiveElement>
+        </div>
+    </section>
+</template>
+
+<script>
+import ShowDataBase from '@/components/Show/ShowDataBase.vue'
+import ActiveElement from '@/components/Show/ActiveElement.vue'
+
+export default {
+  name: 'ShowDataView',
+  data () {
+    return {
+      cards: [
+        {
+          id: 1,
+          name: 'AAA',
+          description: 'AAA desc'
+        },
+        {
+          id: 2,
+          name: 'BBB',
+          description: 'BBB desc'
+        }
+      ],
+      activeCard: null
+    }
+  },
+  methods: {
+    selectCards (id) {
+      this.activeCard = this.cards.find((card) => card.id === id)
+    }
+  },
+  components: { ShowDataBase, ActiveElement }
+}
+</script> 
+```
+
+
+
+```html
+main.js 元件都定義在這裡 : 全域的寫法
 
 // 引用
 import { createApp } from 'vue';
@@ -1739,6 +1844,9 @@ export default {
   emits: ['select-topic'],
 };
 </script>
+注意事項:
+1. props, emits 須加 s
+2. $emit 不加 s
 --------------------------------------------
 App.vue
 <template>
@@ -1858,8 +1966,9 @@ button:active {
 }
 </style>
 --------------------------------------------
-
-
+注意事項:
+1. "activeTopic && activeTopic.title" 需檢查 activeTopic是否存在
+2. 參數 :topic-title => topicTitle
 ```
 
 
